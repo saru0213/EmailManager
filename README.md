@@ -95,12 +95,35 @@ EmailManager is a full-stack **Email Management System** built with **Next.js** 
 
 ## 📦 Installation & Setup
 
+## 🏗️ System Architecture Diagram
+
+```mermaid
+flowchart LR
+    User[User Browser] -->|UI Interaction| FE[Next.js Frontend]
+
+    FE -->|Auth Requests| Auth[Firebase Authentication]
+    FE -->|API Calls| API[Next.js API Routes]
+
+    API -->|Read / Write| DB[Firebase Firestore]
+    API -->|Cache / Optimize| Cache[Redis]
+
+    API -->|Send Emails| Mail[Nodemailer]
+    Mail -->|SMTP| Gmail[Gmail SMTP Server]
+
+    API -->|Generate Content| AI[Google Gemini API]
+
+    External[Google Form] -->|Contact Data| DB
+```
+
+
+
+
 ### 1️⃣ Clone the repository
 ```bash
 git clone https://github.com/saru0213/EmailManager.git
 cd EmailManager
 
-
+```
 
 ## 🔄 System Flow Diagram
 
@@ -134,4 +157,4 @@ flowchart TD
     C --> N[Google Form Integration]
     N --> O[Collect Contact Data]
     O --> G
-
+```

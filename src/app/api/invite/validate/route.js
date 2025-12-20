@@ -19,7 +19,7 @@ export async function POST(req) {
       );
     }
 
-    // 🔥 FIX: data is already an object
+ 
     return NextResponse.json(data);
   } catch (err) {
     console.error("Invite validate error:", err);

@@ -2,15 +2,10 @@
 import React, { useState, useEffect } from "react";
 import {
   Mail,
-  Users,
-  FileText,
+ 
   Send,
   X,
-  Check,
-  Filter,
-  MailCheck,
-  Share2Icon,
-  Copy,
+
 } from "lucide-react";
 import Templates from "./components/Templates";
 import Contacts from "./components/Contacts";
@@ -57,7 +52,7 @@ const EmailManagementSystem = () => {
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
-  // Form state
+ 
   const [formData, setFormData] = useState({});
   const [user, setUser] = useState(null);
   const [uId, setUId] = useState("");

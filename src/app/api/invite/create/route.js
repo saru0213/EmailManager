@@ -9,10 +9,10 @@ export async function POST(req) {
     return NextResponse.json({ error: "Missing userId" }, { status: 400 });
   }
 
-  // 🔐 Secure random token
+
   const token = crypto.randomBytes(24).toString("hex");
 
-  // ⏳ Expire in 1 hour
+
   const TTL = 1 * 60;
 
   await redis.set(`invite:${token}`, JSON.stringify({ userId }), { ex: TTL });

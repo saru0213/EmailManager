@@ -22,7 +22,7 @@ import {
   deleteGroup,
   getSendLogs,
 } from "@/lib/firestorehelperfunction";
-import ReceivedMails from "./components/ReceivedMails";
+
 import Groups from "./components/Groups";
 import { useRouter } from "next/navigation";
 import ProfileMenu from "./components/ProfileMenu";

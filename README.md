@@ -2,6 +2,8 @@
 
 EmailManager is a full-stack **Email Management System** built with **Next.js** that allows users to create, manage, and send bulk emails using customizable and AI-generated templates. It includes secure authentication, contact and group management, email logging, and Google Form integration for easy contact collection.
 
+🔗 Live Demo: https://mailvora.vercel.app
+
 ---
 
 ## 🚀 Features

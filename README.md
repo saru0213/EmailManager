@@ -4,6 +4,10 @@ EmailManager is a full-stack **Email Management System** built with **Next.js** 
 
 🔗 Live Demo: https://mailvora.vercel.app
 
+👤 Demo Account  
+Email: saraswati13122002@gmail.com  
+Password:Saraswati@13
+
 ---
 
 ## 🚀 Features

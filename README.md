@@ -1,36 +1,137 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 📧 EmailManager– Email Management System
 
-## Getting Started
+EmailManager is a full-stack **Email Management System** built with **Next.js** that allows users to create, manage, and send bulk emails using customizable and AI-generated templates. It includes secure authentication, contact and group management, email logging, and Google Form integration for easy contact collection.
 
-First, run the development server:
+---
 
+## 🚀 Features
+
+### 🔐 Authentication
+- Secure **Login & Signup**
+- Firebase Authentication
+- User-specific data isolation
+
+---
+
+### ✉️ Email API Integration
+- Gmail SMTP integration using **Nodemailer**
+- Server-side email sending via Next.js API routes
+- Supports sending and receiving emails
+
+---
+
+### 📝 Template Management
+- Create new email templates
+- Edit and delete templates
+- Dynamic content using input fields
+- **AI-generated templates** using **Google Gemini API**
+
+---
+
+### 🗄️ Template Storage
+- Templates stored securely in **Firebase Firestore**
+- Full CRUD operations
+- User-based access control
+
+---
+
+### 👥 Contact Management
+- Add, edit, and delete contacts
+- Store contact details securely
+- Organize contacts into groups
+
+---
+
+### 📂 Group Management
+- Create, edit, and delete groups
+- View contacts inside a group
+- Select groups for bulk email sending
+
+---
+
+### 📤 Bulk Email Sending
+- Select an email template
+- Send emails to multiple contacts or groups in one action
+- Optimized using **Redis**
+
+---
+
+### 📜 Email Logs
+- Track sent emails
+- Logs include:
+  - Recipient(s)
+  - Template used
+  - Timestamp
+
+---
+
+### 🔗 Google Form Integration
+- Generate a shareable Google Form link
+- Collect contact information easily
+- Add collected data directly to contacts
+
+---
+
+### 🧠 AI Integration
+- Google Gemini API for email template generation
+- Prompt-based professional email creation
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|------|-----------|
+| Frontend | Next.js (App Router) |
+| Styling | Tailwind CSS |
+| Backend | Next.js API Routes |
+| Database | Firebase Firestore |
+| Authentication | Firebase Auth |
+| Email | Gmail SMTP (Nodemailer) |
+| Caching | Redis |
+| AI | Google Gemini API |
+
+---
+
+## 📦 Installation & Setup
+
+### 1️⃣ Clone the repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+git clone https://github.com/saru0213/EmailManager.git
+cd EmailManager
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔄 System Flow Diagram
 
-## Learn More
+```mermaid
+flowchart TD
+    A[User Signup / Login] --> B[Firebase Authentication]
 
-To learn more about Next.js, take a look at the following resources:
+    B --> C[Dashboard]
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    C --> D[Template Management]
+    D --> D1[Create / Edit Template]
+    D --> D2[AI Generate Template (Gemini API)]
+    D1 --> F[Store Template in Firestore]
+    D2 --> F
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    C --> E[Contact Management]
+    E --> E1[Add / Edit / Delete Contact]
+    E --> E2[Create / Manage Groups]
+    E1 --> G[Store Contacts in Firestore]
+    E2 --> G
 
-## Deploy on Vercel
+    C --> H[Bulk Email Sending]
+    H --> I[Select Template]
+    H --> J[Select Contacts / Groups]
+    I --> K[Send Email via Nodemailer (Gmail SMTP)]
+    J --> K
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    K --> L[Email Sent]
+    L --> M[Store Email Log in Firestore]
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    C --> N[Google Form Integration]
+    N --> O[Collect Contact Data]
+    O --> G
+

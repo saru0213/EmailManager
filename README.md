@@ -291,10 +291,10 @@ You can also see the live version here:
 For questions, feedback, or collaboration inquiries, feel free to reach out 🤝
 
 - **Email:** [saraswati13122002@gmail.com] 
-- **Phone:** [9518323988]
+- **Phone:** [+919518323988]
 - **Portfolio:** [[https://saraswati-adkine.vercel.app/]]  
 
-We welcome suggestions and contributions to improve this project 🚀
+I welcome suggestions and contributions to improve this project 🚀
 
 
 

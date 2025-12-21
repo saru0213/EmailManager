@@ -281,7 +281,7 @@ Open http://localhost:3000 to view the app locally.
 ```
 5️⃣ Live Demo
 You can also see the live version here:
-🔗 Live Demo: [[https://mailvora.vercel.app]]
+🔗 Live Demo:https://mailvora.vercel.app
 ```
 
 ---

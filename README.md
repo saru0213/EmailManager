@@ -34,10 +34,11 @@ Password: Kale@megha
 ---
 
 ### 📝 Template Management
+- **AI-generated templates** using **Google Gemini API**
 - Create new email templates
 - Edit and delete templates
 - Dynamic content using input fields
-- **AI-generated templates** using **Google Gemini API**
+
 
 ---
 
@@ -57,7 +58,7 @@ Password: Kale@megha
 
 ### 📁 Import / Export Contacts
 
-- Easily **import contacts** from CSV, Excel, or other formats into the system  
+- Easily **import contacts** from Excel format into the system  
 - **Export contacts** for backup or external use  
 - Supports **bulk upload and bulk download**, saving time for large contact lists  
 - Contacts can be **organized into groups** for targeted bulk emails  
@@ -66,15 +67,15 @@ Password: Kale@megha
 ---
 
 ### 📂 Group Management
-- Create, edit, and delete groups
+- Create, edit, read and delete groups
 - View contacts inside a group
 - Select groups for bulk email sending
 
 ---
 
-### 📤 Bulk Email Sending
+### 📤 Email Sending
 - Select an email template
-- Send emails to multiple contacts or groups in one action
+- Send emails to Single and Bulk contacts or groups in one action
 
 ---
 
@@ -87,8 +88,8 @@ Password: Kale@megha
 
 ---
 
-### 🔗 Google Form Integration
-- Generate a **shareable Google Form link** for external users  
+### 🔗 Contact Form Integration like Google form
+- Generate a **shareable Contact Form link** for external users  
 - Collect contact information easily from form submissions  
 - Add collected data **directly to the contacts database (Firestore)**  
 - **Redis** is used to generate and manage **temporary tokens** for form links, ensuring links are secure and expire after a limited time  
@@ -98,6 +99,12 @@ Password: Kale@megha
 ### 🧠 AI Integration
 - Google Gemini API for email template generation
 - Prompt-based professional email creation
+- The system is designed to produce three high-quality email templates at a time, ensuring users can choose the most suitable version for their communication needs.
+
+---
+
+### 📱 Responsive Design & Device Compatibility
+-The application is developed with a fully responsive infrastructure to ensure smooth usability across all devices. It adapts dynamically to different screen sizes,    including desktops, laptops, tablets, and mobile phones. This guarantees a consistent and optimized user experience regardless of device type or operating system.
 
 ---
 
@@ -135,7 +142,7 @@ flowchart LR
 
     API -->|Generate Content| AI[Google Gemini API]
 
-    External[Google Form] -->|Contact Data| DB
+    External[Contact Form] -->|Contact Data| DB
 ```
 
 ---
@@ -156,8 +163,8 @@ flowchart LR
    - **Nodemailer** sends emails through **Gmail SMTP**.  
    - Email logs are stored in **Firestore** to track sent emails.
 
-4. **Contact Management via Google Form**  
-   - External users can fill a **Google Form**.  
+4. **Contact Management via Contact Form**  
+   - External users can fill a **Contact Form**.  
    - Form submissions are stored in **Firestore** as new contacts.  
    - Each link can have an **expiry time** (controlled via Redis).
 
@@ -182,7 +189,7 @@ flowchart LR
 | **Redis** | Token storage for temporary links and caching |
 | **Nodemailer + Gmail SMTP** | Sending emails to contacts |
 | **Google Gemini API** | AI-powered template generation |
-| **Google Form** | External contact submission |
+| **ContactForm** | External contact submission |
 
 ---
 
@@ -231,12 +238,13 @@ Follow these steps to run **EmailManager** locally:
 ```bash
 git clone https://github.com/saru0213/EmailManager.git
 cd EmailManager
-
+```
 2️⃣ Install Dependencies
 bash
 Copy code
 npm install
 
+```
 3️⃣ Add Environment Variables
 Create a `.env.local` file in the root directory and add the following environment variables:
 
@@ -263,17 +271,30 @@ NEXT_PUBLIC_EXPIRE_TIME=
 # Upstash Redis configuration
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
-
+```
 4️⃣ Run the Development Server
 bash
 Copy code
 npm run dev
 
 Open http://localhost:3000 to view the app locally.
-
+```
 5️⃣ Live Demo
 You can also see the live version here:
 🔗 Live Demo: https://mailvora.vercel.app
+```
+
+---
+
+### 📬 Contact
+
+For questions, feedback, or collaboration inquiries, feel free to reach out 🤝
+
+- **Email:** [saraswati13122002@gmail.com] 
+- **Phone:** [9518323988]
+- **Portfolio:** [[https://saraswati-adkine.vercel.app/]]  
+
+We welcome suggestions and contributions to improve this project 🚀
 
 
 

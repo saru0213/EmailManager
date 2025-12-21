@@ -11,7 +11,7 @@ function EditContact({ formData, handleInputChange, groups }) {
           suppressHydrationWarning
           type="text"
           value={formData.name || ""}
-          placeholder="Eg. Saraswati Adkine"
+          placeholder="Eg.xyz"
           onChange={(e) => handleInputChange("name", e.target.value)}
           className="w-full text-black px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
@@ -23,7 +23,7 @@ function EditContact({ formData, handleInputChange, groups }) {
         <input
           type="email"
           value={formData.email || ""}
-          placeholder="Eg. adkinesara@gmail.com"
+          placeholder="Eg. xyz@gmail.com"
           onChange={(e) => handleInputChange("email", e.target.value)}
           className="w-full text-black px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
@@ -38,6 +38,18 @@ function EditContact({ formData, handleInputChange, groups }) {
           onChange={(e) => handleInputChange("phone", e.target.value)}
           className="w-full text-black px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           placeholder="e.g. +91 9551234567"
+        />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Post
+        </label>
+        <input
+          type="text"
+          value={formData.post || ""}
+          placeholder="Eg. Full Stack Developer"
+          onChange={(e) => handleInputChange("post", e.target.value)}
+          className="w-full text-black px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
       <div>

@@ -4,7 +4,6 @@ import AITemplateEditor from "../AITemplateGenerator";
 function EditTemplete({ handleInputChange, formData, setFormData }) {
   return (
     <>
-      {/* Template Name */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Template Name
@@ -18,7 +17,7 @@ function EditTemplete({ handleInputChange, formData, setFormData }) {
         />
       </div>
 
-      {/* Subject */}
+   
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Subject Line
@@ -32,7 +31,7 @@ function EditTemplete({ handleInputChange, formData, setFormData }) {
         />
       </div>
 
-      {/* Email Intro */}
+ 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Email Introduction
@@ -46,7 +45,7 @@ function EditTemplete({ handleInputChange, formData, setFormData }) {
         />
       </div>
 
-      {/* MAIN EMAIL SECTION */}
+   
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Main Email Section
@@ -64,7 +63,7 @@ function EditTemplete({ handleInputChange, formData, setFormData }) {
         </p>
       </div>
 
-      {/* Footer / Signature */}
+
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Email Footer / Signature
@@ -78,7 +77,7 @@ function EditTemplete({ handleInputChange, formData, setFormData }) {
         />
       </div>
 
-      {/* AI Editor */}
+
       <AITemplateEditor formData={formData} setFormData={setFormData} />
     </>
   );

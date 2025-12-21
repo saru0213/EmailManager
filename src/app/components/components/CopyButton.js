@@ -29,7 +29,9 @@ export default function InviteLink({ uId }) {
     const data = await res.json();
 
     await navigator.clipboard.writeText(data.link);
-    alert("Invite link copied (expires in 1 hour)");
+    alert(
+      `Invite link copied (expires in ${process.env.NEXT_PUBLIC_EXPIRE_TIME} Min)`
+    );
   };
 
   return (

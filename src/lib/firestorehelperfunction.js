@@ -48,11 +48,9 @@ export const saveTemplate = async (USER_ID, template) => {
 
 export const deleteTemplate = async (id) => deleteDoc(doc(db, "templates", id));
 
-// start contact functions
 export const getContacts = async (USER_ID) => {
   const q = query(collection(db, "contacts"), where("userId", "==", USER_ID));
   const snap = await getDocs(q);
-  console.log("getContacts run");
 
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 };

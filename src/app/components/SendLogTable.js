@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, ArrowUpDown } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -18,9 +18,8 @@ export default function SendLogTable({ logs = [], loading }) {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("desc");
 
-  /* ----------------------------
-     Filter + Sort
-  ---------------------------- */
+ 
+
   const processedLogs = useMemo(() => {
     const filtered = logs.filter((log) => {
       const toText = Array.isArray(log.to) ? log.to.join(", ") : log.to;
@@ -47,9 +46,7 @@ export default function SendLogTable({ logs = [], loading }) {
     return filtered;
   }, [logs, searchQuery, statusFilter, sortOrder]);
 
-  /* ----------------------------
-     States
-  ---------------------------- */
+
   if (loading) {
     return (
       <p className="text-sm text-muted-foreground">Loading send history...</p>
@@ -60,9 +57,7 @@ export default function SendLogTable({ logs = [], loading }) {
     return <p className="text-sm text-muted-foreground">No emails sent yet.</p>;
   }
 
-  /* ----------------------------
-     Render
-  ---------------------------- */
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -83,7 +78,7 @@ export default function SendLogTable({ logs = [], loading }) {
             />
           </div>
 
-          {/* Status */}
+      
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="sm:w-40">
               <SelectValue placeholder="Status" />
@@ -95,7 +90,7 @@ export default function SendLogTable({ logs = [], loading }) {
             </SelectContent>
           </Select>
 
-          {/* Sort */}
+    
           <Select value={sortOrder} onValueChange={setSortOrder}>
             <SelectTrigger className="sm:w-44">
               <SelectValue placeholder="Sort" />
@@ -109,7 +104,7 @@ export default function SendLogTable({ logs = [], loading }) {
       </CardHeader>
 
       <CardContent>
-        {/* MOBILE VIEW */}
+       
         <div className="space-y-3 sm:hidden">
           {processedLogs.map((log) => (
             <div key={log.id} className="border rounded-lg p-3 space-y-1">
@@ -132,9 +127,9 @@ export default function SendLogTable({ logs = [], loading }) {
                 Template: {log.templateName || "—"}
               </p>
 
-              <p className="text-xs text-gray-600">
+              {/* <p className="text-xs text-gray-600">
                 Group: {log.groupName || "—"}
-              </p>
+              </p> */}
 
               <p className="text-xs text-gray-500">
                 {log.sentAt?.toDate
@@ -145,7 +140,6 @@ export default function SendLogTable({ logs = [], loading }) {
           ))}
         </div>
 
-        {/* DESKTOP TABLE */}
         <div className="hidden sm:block overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -154,7 +148,7 @@ export default function SendLogTable({ logs = [], loading }) {
                   "To",
                   "Subject",
                   "Template",
-                  "Group",
+                 
                   "Status",
                   "Sent At",
                 ].map((h) => (
@@ -182,8 +176,8 @@ export default function SendLogTable({ logs = [], loading }) {
                   <td className="px-4 py-3 text-sm">
                     {log.templateName || "—"}
                   </td>
-
-                  <td className="px-4 py-3 text-sm">{log.groupName || "—"}</td>
+{/* 
+                  <td className="px-4 py-3 text-sm">{log.groupName || "—"}</td> */}
 
                   <td className="px-4 py-3">
                     <Badge

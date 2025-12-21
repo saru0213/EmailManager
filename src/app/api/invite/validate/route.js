@@ -19,7 +19,7 @@ export async function POST(req) {
       );
     }
 
- 
+   
     return NextResponse.json(data);
   } catch (err) {
     console.error("Invite validate error:", err);

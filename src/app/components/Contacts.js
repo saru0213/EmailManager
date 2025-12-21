@@ -1,4 +1,14 @@
-import { Edit2, Plus, Search, Trash2, Users } from "lucide-react";
+import { exportContactsToExcel } from "@/lib/exportContacts";
+import { importContactsFromExcel } from "@/lib/importContacts";
+import {
+  Download,
+  Edit2,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+  Users,
+} from "lucide-react";
 import React from "react";
 
 function Contacts({
@@ -10,6 +20,7 @@ function Contacts({
   filteredContacts,
   handleDelete,
   setFilterGroup,
+  USER_ID,
 }) {
   return (
     <>
@@ -46,6 +57,48 @@ function Contacts({
               <Plus className="w-4 h-4 mr-2" />
               Add Contact
             </button>
+            <div className="flex gap-2">
+              {/* Export */}
+              <button
+                onClick={() => exportContactsToExcel(filteredContacts, groups)}
+                title="export data"
+                className="px-4 py-2 border rounded-lg hover:bg-gray-100 flex justify-center gap-1"
+              >
+                Export
+                <Download className="w-4 h-4 mt-1" />
+              </button>
+
+              {/* Import */}
+              {USER_ID.length > 0 && (
+                <label className="px-4 py-2 border rounded-lg cursor-pointer hover:bg-gray-100">
+                  <span className="flex justify-center gap-1">
+                    <Upload className="w-4 h-4 mt-1" />
+                    Import
+                  </span>
+
+                  <input
+                    type="file"
+                    accept=".xlsx"
+                    hidden
+                    title="import data"
+                    onChange={async (e) => {
+                      const file = e.target.files[0];
+                      if (!file) return;
+
+                      await importContactsFromExcel(
+                        file,
+                        USER_ID,
+                        groups,
+                        filteredContacts
+                      );
+
+                      alert("Contacts imported successfully");
+                      window.location.reload();
+                    }}
+                  />
+                </label>
+              )}
+            </div>
           </div>
         </div>
 
@@ -62,6 +115,9 @@ function Contacts({
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Phone
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    Post
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Group
@@ -84,6 +140,9 @@ function Contacts({
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {contact.phone || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-600">
+                        {contact.post || "-"}
                       </td>
                       <td className="px-6 py-4 text-sm">
                         {group && (

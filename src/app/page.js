@@ -1,12 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import {
-  Mail,
- 
-  Send,
-  X,
-
-} from "lucide-react";
+import { Mail, Send, X } from "lucide-react";
 import Templates from "./components/Templates";
 import Contacts from "./components/Contacts";
 
@@ -52,7 +46,7 @@ const EmailManagementSystem = () => {
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
- 
+
   const [formData, setFormData] = useState({});
   const [user, setUser] = useState(null);
   const [uId, setUId] = useState("");
@@ -73,6 +67,7 @@ const EmailManagementSystem = () => {
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
+
       if (!token) {
         router.replace("/auth");
         return;
@@ -86,19 +81,31 @@ const EmailManagementSystem = () => {
           },
         });
 
-        if (!res.ok) throw new Error("Failed to fetch user");
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          router.replace("/auth");
+          return;
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch user");
+        }
 
         const data = await res.json();
         setUser(data);
         setUId(data.userId);
       } catch (err) {
         console.error(err);
+
+        localStorage.removeItem("token");
+
         router.replace("/auth");
       }
     };
 
     fetchUser();
   }, [router]);
+
   const USER_ID = user?.userId;
 
   const loadData = async (USER_ID) => {
@@ -166,7 +173,7 @@ const EmailManagementSystem = () => {
   };
 
   const handleSaveContact = async () => {
-    if (!formData.name || !formData.email) {
+    if (!formData.name || !formData.email || !formData.post) {
       alert("Please fill in name and email");
       return;
     }
@@ -199,6 +206,7 @@ const EmailManagementSystem = () => {
       name: formData.name,
       email: formData.email,
       phone: formData.phone || "",
+      post: formData.post || "",
       groupId: formData.groupId || "",
     });
 
@@ -365,10 +373,16 @@ const EmailManagementSystem = () => {
   };
 
   const filteredContacts = contacts.filter((c) => {
+    const search = searchTerm.toLowerCase();
+
     const matchesSearch =
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchTerm.toLowerCase());
+      (c.name && c.name.toLowerCase().includes(search)) ||
+      (c.post && c.post.toLowerCase().includes(search)) ||
+      (c.email && c.email.toLowerCase().includes(search)) ||
+      (c.phone && c.phone.toString().includes(search)); // 👈 phone support
+
     const matchesGroup = filterGroup === "all" || c.groupId === filterGroup;
+
     return matchesSearch && matchesGroup;
   });
 
@@ -426,6 +440,7 @@ const EmailManagementSystem = () => {
             filteredContacts={filteredContacts}
             handleDelete={handleDelete}
             setFilterGroup={setFilterGroup}
+            USER_ID={uId}
           />
         )}
 
@@ -439,7 +454,7 @@ const EmailManagementSystem = () => {
           />
         )}
         {activeTab === "log" && <SendLogTable logs={logs} loading={loading} />}
-        {activeTab === "received-mails" && <ReceivedMails />}
+       
       </main>
 
       {/* Modal */}

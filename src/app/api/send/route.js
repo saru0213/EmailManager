@@ -31,13 +31,13 @@ export async function POST(request) {
       },
     });
 
-
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to,
       subject,
       html,
     });
+
 
     await addDoc(collection(db, "sendlog"), {
       userId,

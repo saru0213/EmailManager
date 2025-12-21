@@ -7,11 +7,9 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login"); // 'login' or 'signup'
   const [loading, setLoading] = useState(false);
 
-  
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-
 
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
@@ -19,18 +17,29 @@ export default function AuthPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    if (token) {
-      router.replace("/"); 
-    }
+    if (token) router.replace("/");
   }, [router]);
- 
+
+  const isValidGmail = (email) => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+
+  const isValidPassword = (password) => password.length >= 8;
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!isValidGmail(loginEmail)) {
+      return alert("Please enter a valid Gmail address.");
+    }
+
+    if (!isValidPassword(loginPassword)) {
+      return alert("Password must be at least 8 characters.");
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/login", {
@@ -58,9 +67,21 @@ export default function AuthPage() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    if (!signupName.trim()) return alert("Name cannot be empty.");
+
+    if (!isValidGmail(signupEmail)) {
+      return alert("Please enter a valid Gmail address.");
+    }
+
+    if (!isValidPassword(signupPassword)) {
+      return alert("Password must be at least 8 characters.");
+    }
+
     if (signupPassword !== confirmPassword) {
       return alert("Passwords do not match");
     }
+
     setLoading(true);
     try {
       const res = await fetch("/api/signup", {
@@ -91,13 +112,11 @@ export default function AuthPage() {
     }
   };
 
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-around mb-6 text-gray-600">
           <button
-            suppressHydrationWarning
             className={`py-2 px-4 font-semibold rounded ${
               activeTab === "login" ? "bg-blue-600 text-white" : "bg-gray-200"
             }`}
@@ -106,7 +125,6 @@ export default function AuthPage() {
             Login
           </button>
           <button
-            suppressHydrationWarning
             className={`py-2 px-4 font-semibold rounded ${
               activeTab === "signup" ? "bg-green-600 text-white" : "bg-gray-200"
             }`}
@@ -120,9 +138,8 @@ export default function AuthPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Gmail Address"
               value={loginEmail}
-              suppressHydrationWarning
               onChange={(e) => setLoginEmail(e.target.value)}
               className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
               required
@@ -132,7 +149,6 @@ export default function AuthPage() {
                 type={showLoginPassword ? "text" : "password"}
                 placeholder="Password"
                 value={loginPassword}
-                suppressHydrationWarning
                 onChange={(e) => setLoginPassword(e.target.value)}
                 className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
                 required
@@ -150,7 +166,6 @@ export default function AuthPage() {
             </div>
             <button
               type="submit"
-              suppressHydrationWarning
               disabled={loading}
               className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
             >
@@ -163,16 +178,14 @@ export default function AuthPage() {
               type="text"
               placeholder="Name"
               value={signupName}
-              suppressHydrationWarning
               onChange={(e) => setSignupName(e.target.value)}
               className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
               required
             />
             <input
               type="email"
-              placeholder="Email"
+              placeholder="Gmail Address"
               value={signupEmail}
-              suppressHydrationWarning
               onChange={(e) => setSignupEmail(e.target.value)}
               className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
               required
@@ -180,9 +193,8 @@ export default function AuthPage() {
             <div className="relative">
               <input
                 type={showSignupPassword ? "text" : "password"}
-                placeholder="Password"
+                placeholder="Password (min 8 chars)"
                 value={signupPassword}
-                suppressHydrationWarning
                 onChange={(e) => setSignupPassword(e.target.value)}
                 className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
                 required
@@ -203,7 +215,6 @@ export default function AuthPage() {
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 value={confirmPassword}
-                suppressHydrationWarning
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
                 required
@@ -221,7 +232,6 @@ export default function AuthPage() {
             </div>
             <button
               type="submit"
-              suppressHydrationWarning
               disabled={loading}
               className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
             >

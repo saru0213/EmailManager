@@ -7,7 +7,7 @@ EmailManager is a full-stack **Email Management System** built with **Next.js** 
 
 👤 Demo Account  
 Email: saraswati13122002@gmail.com  
-Password: Swati@18
+Password: Kale@megha
 
 ---
 

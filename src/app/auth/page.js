@@ -4,12 +4,16 @@ import { useRouter } from "next/navigation";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState("login"); // 'login' or 'signup'
+  const [activeTab, setActiveTab] = useState("login");
   const [loading, setLoading] = useState(false);
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
+
+  // ✅ NEW: App password states
+  const [appPassword, setAppPassword] = useState("");
+  const [showAppPassword, setShowAppPassword] = useState(false);
 
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
@@ -29,6 +33,8 @@ export default function AuthPage() {
 
   const isValidPassword = (password) => password.length >= 8;
 
+  const isValidAppPassword = (password) => /^[a-z]{16}$/.test(password);
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -40,19 +46,30 @@ export default function AuthPage() {
       return alert("Password must be at least 8 characters.");
     }
 
+ 
+    if (!isValidAppPassword(appPassword)) {
+      return alert("App Password must be exactly 16 lowercase letters (a–z).");
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+          appPassword, 
+        }),
       });
+
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem("token", data.token);
         alert(`Welcome ${data.user.name}`);
         setLoginEmail("");
         setLoginPassword("");
+        setAppPassword("");
         router.replace("/");
       } else {
         alert(data.error);
@@ -69,18 +86,12 @@ export default function AuthPage() {
     e.preventDefault();
 
     if (!signupName.trim()) return alert("Name cannot be empty.");
-
-    if (!isValidGmail(signupEmail)) {
+    if (!isValidGmail(signupEmail))
       return alert("Please enter a valid Gmail address.");
-    }
-
-    if (!isValidPassword(signupPassword)) {
+    if (!isValidPassword(signupPassword))
       return alert("Password must be at least 8 characters.");
-    }
-
-    if (signupPassword !== confirmPassword) {
+    if (signupPassword !== confirmPassword)
       return alert("Passwords do not match");
-    }
 
     setLoading(true);
     try {
@@ -96,17 +107,10 @@ export default function AuthPage() {
       const data = await res.json();
       if (res.ok) {
         alert("Signup successful! You can now log in.");
-        setSignupName("");
-        setSignupEmail("");
-        setSignupPassword("");
-        setConfirmPassword("");
         setActiveTab("login");
       } else {
         alert(data.error);
       }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -141,33 +145,86 @@ export default function AuthPage() {
               placeholder="Gmail Address"
               value={loginEmail}
               onChange={(e) => setLoginEmail(e.target.value)}
-              className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
+              className="w-full p-2 border rounded"
               required
             />
+
+        
             <div className="relative">
               <input
                 type={showLoginPassword ? "text" : "password"}
                 placeholder="Password"
                 value={loginPassword}
                 onChange={(e) => setLoginPassword(e.target.value)}
-                className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
+                className="w-full p-2 border rounded"
                 required
               />
               <span
-                className="absolute right-2 top-2 cursor-pointer text-gray-500"
+                className="absolute right-2 top-2 cursor-pointer"
                 onClick={() => setShowLoginPassword(!showLoginPassword)}
               >
-                {showLoginPassword ? (
-                  <AiFillEyeInvisible size={20} />
-                ) : (
-                  <AiFillEye size={20} />
-                )}
+                {showLoginPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
+
+         
+            <div className="relative">
+              <input
+                type={showAppPassword ? "text" : "password"}
+                placeholder="App Password (16 lowercase letters)"
+                value={appPassword}
+                onChange={(e) => {
+                  const v = e.target.value.toLowerCase();
+                  if (/^[a-z]*$/.test(v) && v.length <= 16) {
+                    setAppPassword(v);
+                  }
+                }}
+                maxLength={16}
+                className="w-full p-2 border rounded"
+                required
+              />
+              <span
+                className="absolute right-2 top-2 cursor-pointer"
+                onClick={() => setShowAppPassword(!showAppPassword)}
+              >
+                {showAppPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+              </span>
+            </div>
+
+       
+            <div className="text-right">
+              <a
+                href="https://myaccount.google.com/apppasswords"
+                target="_blank"
+                className="text-xs text-blue-600 underline"
+              >
+                Create App Password
+              </a>
+            </div>
+
+      
+            <div className="text-xs bg-gray-50 border rounded p-3 text-gray-700">
+              <p className="font-semibold mb-1">
+                🔐 How to create App Password
+              </p>
+              <ol className="list-decimal ml-4 space-y-1">
+                <li>Use the same Gmail entered above</li>
+                <li>Enable 2-Step Verification</li>
+                <li>Open App Passwords</li>
+                <li>Select App → Mail</li>
+                <li>Select Device → Other</li>
+                <li>Copy 16-character password</li>
+              </ol>
+            </div>
+
+            <p className="text-xs text-red-600">
+              ⚠️ Do NOT use your Gmail password.
+            </p>
+
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+              className="w-full bg-blue-600 text-white py-2 rounded"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
@@ -179,61 +236,57 @@ export default function AuthPage() {
               placeholder="Name"
               value={signupName}
               onChange={(e) => setSignupName(e.target.value)}
-              className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
+              className="w-full p-2 border rounded"
               required
             />
+
             <input
               type="email"
               placeholder="Gmail Address"
               value={signupEmail}
               onChange={(e) => setSignupEmail(e.target.value)}
-              className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
+              className="w-full p-2 border rounded"
               required
             />
+
             <div className="relative">
               <input
                 type={showSignupPassword ? "text" : "password"}
-                placeholder="Password (min 8 chars)"
+                placeholder="Password"
                 value={signupPassword}
                 onChange={(e) => setSignupPassword(e.target.value)}
-                className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
+                className="w-full p-2 border rounded"
                 required
               />
               <span
-                className="absolute right-2 top-2 cursor-pointer text-gray-500"
+                className="absolute right-2 top-2 cursor-pointer"
                 onClick={() => setShowSignupPassword(!showSignupPassword)}
               >
-                {showSignupPassword ? (
-                  <AiFillEyeInvisible size={20} />
-                ) : (
-                  <AiFillEye size={20} />
-                )}
+                {showSignupPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
+
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-2 border text-gray-900 rounded placeholder-gray-400"
+                className="w-full p-2 border rounded"
                 required
               />
               <span
-                className="absolute right-2 top-2 cursor-pointer text-gray-500"
+                className="absolute right-2 top-2 cursor-pointer"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showConfirmPassword ? (
-                  <AiFillEyeInvisible size={20} />
-                ) : (
-                  <AiFillEye size={20} />
-                )}
+                {showConfirmPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+              className="w-full bg-green-600 text-white py-2 rounded"
             >
               {loading ? "Signing up..." : "Sign Up"}
             </button>

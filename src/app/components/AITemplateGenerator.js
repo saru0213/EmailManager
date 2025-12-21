@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AITemplateEditor({ formData, setFormData }) {
   const [prompt, setPrompt] = useState("");
@@ -7,9 +7,36 @@ export default function AITemplateEditor({ formData, setFormData }) {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("/api/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+
+        const data = await res.json();
+        setUserEmail(data.email);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+    fetchUser();
+  }, []);
+
   const generateTemplates = async () => {
     if (!prompt.trim()) {
       alert("Please enter a prompt");
+      return;
+    }
+
+    if (!userEmail) {
+      alert("User email not loaded. Please login again.");
       return;
     }
 
@@ -18,7 +45,7 @@ export default function AITemplateEditor({ formData, setFormData }) {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, senderEmail: userEmail }),
       });
 
       if (!res.ok) throw new Error("Generation failed");

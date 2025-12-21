@@ -30,10 +30,8 @@ export async function POST(req) {
       );
     }
 
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
 
     const docRef = await addDoc(usersRef, {
       name,

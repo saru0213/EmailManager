@@ -7,6 +7,8 @@ export async function POST(request) {
   try {
     const {
       userId,
+      fromEmail,
+      appPassword,
       to,
       subject,
       html,
@@ -16,7 +18,7 @@ export async function POST(request) {
       groupName,
     } = await request.json();
 
-    if (!userId || !to || !subject || !html) {
+    if (!userId || !fromEmail || !appPassword || !to || !subject || !html) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -26,21 +28,21 @@ export async function POST(request) {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: fromEmail || process.env.EMAIL_USER,
+        pass: appPassword || process.env.EMAIL_PASS,
       },
     });
 
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: fromEmail,
       to,
       subject,
       html,
     });
 
-
     await addDoc(collection(db, "sendlog"), {
       userId,
+      fromEmail,
       to,
       subject,
       html,

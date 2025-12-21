@@ -3,16 +3,16 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { prompt } = await req.json();
+    const { prompt, senderEmail } = await req.json();
 
-    if (!prompt) {
+    if (!prompt || !senderEmail) {
       return NextResponse.json(
-        { error: "Prompt is required" },
+        { error: "Prompt and senderEmail are required" },
         { status: 400 }
       );
     }
 
-    const templates = await generateEmailTemplates(prompt);
+    const templates = await generateEmailTemplates(prompt, senderEmail);
 
     return NextResponse.json(templates);
   } catch (error) {

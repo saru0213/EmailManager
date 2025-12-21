@@ -64,47 +64,51 @@ const EmailManagementSystem = () => {
     loadLogs();
   }, [uId]);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token");
+ useEffect(() => {
+  const fetchUser = async () => {
+    const token = localStorage.getItem("token");
 
-      if (!token) {
+    if (!token) {
+      router.replace("/auth");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/user", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
         router.replace("/auth");
         return;
       }
 
-      try {
-        const res = await fetch("/api/user", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (res.status === 401) {
-          localStorage.removeItem("token");
-          router.replace("/auth");
-          return;
-        }
-
-        if (!res.ok) {
-          throw new Error("Failed to fetch user");
-        }
-
-        const data = await res.json();
-        setUser(data);
-        setUId(data.userId);
-      } catch (err) {
-        console.error(err);
-
-        localStorage.removeItem("token");
-
-        router.replace("/auth");
+      if (!res.ok) {
+        throw new Error("Failed to fetch user");
       }
-    };
 
-    fetchUser();
-  }, [router]);
+      const data = await res.json();
+
+      setUser(data);
+      setUId(data.userId);
+
+      // // ✅ NEW: store app password if needed
+      // setAppPassword(data.appPassword);
+
+    } catch (err) {
+      console.error(err);
+      localStorage.removeItem("token");
+      router.replace("/auth");
+    }
+  };
+
+  fetchUser();
+}, [router]);
+
 
   const USER_ID = user?.userId;
 
@@ -262,10 +266,10 @@ const EmailManagementSystem = () => {
       } else if (type === "contact") {
         await deleteContact(id);
       } else if (type === "group") {
-        await deleteGroup(id); // ✅ Delete group safely
+        await deleteGroup(id); 
       }
 
-      await loadData(USER_ID); // Refresh data after deletion
+      await loadData(USER_ID); 
     } catch (error) {
       console.error("Delete failed:", error);
       alert("Failed to delete item");
@@ -302,6 +306,9 @@ const EmailManagementSystem = () => {
         groupId: groupId?.id || null,
         groupName: groupId?.name || null,
         userId: user?.userId,
+         fromEmail:user?.email,
+        appPassword:user?.appPassword,
+        
       }),
     });
 
@@ -322,7 +329,7 @@ const EmailManagementSystem = () => {
       );
 
       for (const contact of selectedContactsList) {
-        // Combine intro, mainBody, and footer into HTML
+       
         let body = `
         <html>
           <head>
@@ -353,12 +360,12 @@ const EmailManagementSystem = () => {
         </html>
       `;
 
-        // Replace placeholders
+  
         body = body.replace(/\{\{name\}\}/g, contact.name || "");
         body = body.replace(/\{\{email\}\}/g, contact.email || "");
         body = body.replace(/\{\{phone\}\}/g, contact.phone || "");
 
-        // Send email
+    
         await sendEmail(contact.email, selectedTemplate.subject, body);
       }
 

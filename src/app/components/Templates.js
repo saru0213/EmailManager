@@ -1,5 +1,8 @@
 import { Edit2, FileText, Plus, Send, Trash2 } from "lucide-react";
-import React from "react";
+import React, { useState, useMemo } from "react";
+import dayjs from "dayjs";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function Templates({
   openModal,
@@ -9,41 +12,103 @@ function Templates({
   setSelectedContacts,
   handleDelete,
 }) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [dateUnit, setDateUnit] = useState("day");
+
   const openSendEmailModal = (template) => {
     setSelectedTemplate(template);
     setSelectedContacts([]);
     setSendEmailModal(true);
   };
 
+  const filteredTemplates = useMemo(() => {
+    return templates.filter((t) => {
+      const nameMatch = t.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      let dateMatch = true;
+      if (selectedDate && t.createdAt) {
+        const templateDate = dayjs(t.createdAt.toDate());
+        if (dateUnit === "day") {
+          dateMatch = templateDate.isSame(selectedDate, "day");
+        } else if (dateUnit === "month") {
+          dateMatch = templateDate.isSame(selectedDate, "month");
+        } else if (dateUnit === "year") {
+          dateMatch = templateDate.isSame(selectedDate, "year");
+        }
+      }
+
+      return nameMatch && dateMatch;
+    });
+  }, [templates, searchTerm, selectedDate, dateUnit]);
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-2 md:p-4">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-2 md:space-y-0">
         <h2 className="text-xl font-semibold text-gray-900">Email Templates</h2>
-        <button
-          onClick={() => openModal("template")}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Template
-        </button>
+        <div className="flex flex-wrap gap-2 md:gap-3 items-center w-full md:w-auto">
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 md:flex-none px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[150px]"
+          />
+
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            placeholderText="Filter by date"
+            className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[150px]"
+            dateFormat="dd/MM/yyyy"
+            isClearable
+          />
+
+          <select
+            value={dateUnit}
+            onChange={(e) => setDateUnit(e.target.value)}
+            className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[100px]"
+          >
+            <option value="day">Day</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+          </select>
+
+          <button
+            onClick={() => openModal("template")}
+            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition min-w-[130px] justify-center"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Template
+          </button>
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {templates.map((template) => {
-   
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredTemplates.map((template) => {
           const previewText = `${template.intro || ""}\n\n${
             template.mainBody || ""
           }\n\n${template.footer || ""}`;
 
+          const createdAtText = template.createdAt
+            ? dayjs(template.createdAt.toDate()).format("DD/MM/YYYY")
+            : "N/A";
+
           return (
             <div
               key={template.id}
-              className="bg-white rounded-lg shadow-sm border p-5 hover:shadow-md transition"
+              className="bg-white rounded-lg shadow-sm border p-4 md:p-5 hover:shadow-md transition flex flex-col"
             >
-              <div className="flex justify-between items-start mb-3">
-                <h3 className="font-semibold text-gray-900 text-lg">
-                  {template.name}
-                </h3>
+              <div className="flex justify-between items-start mb-2 md:mb-3">
+                <div className="flex-1 overflow-hidden">
+                  <h3 className="font-semibold text-gray-900 text-lg truncate">
+                    {template.name}
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Created: {createdAtText}
+                  </p>
+                </div>
                 <div className="flex space-x-1">
                   <button
                     onClick={() => openModal("template", template)}
@@ -69,7 +134,7 @@ function Templates({
 
               <button
                 onClick={() => openSendEmailModal(template)}
-                className="w-full flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
+                className="w-full flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm mt-auto"
               >
                 <Send className="w-4 h-4 mr-2" />
                 Send Bulk Email
@@ -78,10 +143,10 @@ function Templates({
           );
         })}
 
-        {templates.length === 0 && (
+        {filteredTemplates.length === 0 && (
           <div className="col-span-full text-center py-12 text-gray-500">
             <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>No templates yet. Create your first template!</p>
+            <p>No templates found.</p>
           </div>
         )}
       </div>

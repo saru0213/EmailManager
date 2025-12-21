@@ -14,7 +14,6 @@ function Templates({
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
-  const [dateUnit, setDateUnit] = useState("day");
 
   const openSendEmailModal = (template) => {
     setSelectedTemplate(template);
@@ -25,26 +24,16 @@ function Templates({
   const filteredTemplates = useMemo(() => {
     return templates.filter((t) => {
       const nameMatch = t.name.toLowerCase().includes(searchTerm.toLowerCase());
-
-      let dateMatch = true;
-      if (selectedDate && t.createdAt) {
-        const templateDate = dayjs(t.createdAt.toDate());
-        if (dateUnit === "day") {
-          dateMatch = templateDate.isSame(selectedDate, "day");
-        } else if (dateUnit === "month") {
-          dateMatch = templateDate.isSame(selectedDate, "month");
-        } else if (dateUnit === "year") {
-          dateMatch = templateDate.isSame(selectedDate, "year");
-        }
-      }
+      const dateMatch = selectedDate
+        ? t.createdAt && dayjs(t.createdAt.toDate()).isSame(selectedDate, "day")
+        : true;
 
       return nameMatch && dateMatch;
     });
-  }, [templates, searchTerm, selectedDate, dateUnit]);
+  }, [templates, searchTerm, selectedDate]);
 
   return (
     <div className="p-2 md:p-4">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-2 md:space-y-0">
         <h2 className="text-xl font-semibold text-gray-900">Email Templates</h2>
         <div className="flex flex-wrap gap-2 md:gap-3 items-center w-full md:w-auto">
@@ -64,16 +53,6 @@ function Templates({
             dateFormat="dd/MM/yyyy"
             isClearable
           />
-
-          <select
-            value={dateUnit}
-            onChange={(e) => setDateUnit(e.target.value)}
-            className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[100px]"
-          >
-            <option value="day">Day</option>
-            <option value="month">Month</option>
-            <option value="year">Year</option>
-          </select>
 
           <button
             onClick={() => openModal("template")}

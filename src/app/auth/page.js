@@ -11,16 +11,14 @@ export default function AuthPage() {
   const [loginPassword, setLoginPassword] = useState("");
   const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-  // ✅ NEW: App password states
-  const [appPassword, setAppPassword] = useState("");
-  const [showAppPassword, setShowAppPassword] = useState(false);
-
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [signupAppPassword, setSignupAppPassword] = useState("");
   const [showSignupPassword, setShowSignupPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSignupAppPassword, setShowSignupAppPassword] = useState(false);
 
   const router = useRouter();
 
@@ -30,9 +28,7 @@ export default function AuthPage() {
   }, [router]);
 
   const isValidGmail = (email) => /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
-
   const isValidPassword = (password) => password.length >= 8;
-
   const isValidAppPassword = (password) => /^[a-z]{16}$/.test(password);
 
   const handleLogin = async (e) => {
@@ -46,11 +42,6 @@ export default function AuthPage() {
       return alert("Password must be at least 8 characters.");
     }
 
- 
-    if (!isValidAppPassword(appPassword)) {
-      return alert("App Password must be exactly 16 lowercase letters (a–z).");
-    }
-
     setLoading(true);
     try {
       const res = await fetch("/api/login", {
@@ -59,7 +50,6 @@ export default function AuthPage() {
         body: JSON.stringify({
           email: loginEmail,
           password: loginPassword,
-          appPassword, 
         }),
       });
 
@@ -69,7 +59,6 @@ export default function AuthPage() {
         alert(`Welcome ${data.user.name}`);
         setLoginEmail("");
         setLoginPassword("");
-        setAppPassword("");
         router.replace("/");
       } else {
         alert(data.error);
@@ -86,12 +75,11 @@ export default function AuthPage() {
     e.preventDefault();
 
     if (!signupName.trim()) return alert("Name cannot be empty.");
-    if (!isValidGmail(signupEmail))
-      return alert("Please enter a valid Gmail address.");
-    if (!isValidPassword(signupPassword))
-      return alert("Password must be at least 8 characters.");
-    if (signupPassword !== confirmPassword)
-      return alert("Passwords do not match");
+    if (!isValidGmail(signupEmail)) return alert("Please enter a valid Gmail address.");
+    if (!isValidPassword(signupPassword)) return alert("Password must be at least 8 characters.");
+    if (signupPassword !== confirmPassword) return alert("Passwords do not match");
+    if (!isValidAppPassword(signupAppPassword))
+      return alert("App Password must be exactly 16 lowercase letters (a–z).");
 
     setLoading(true);
     try {
@@ -102,6 +90,7 @@ export default function AuthPage() {
           name: signupName,
           email: signupEmail,
           password: signupPassword,
+          appPassword: signupAppPassword,
         }),
       });
       const data = await res.json();
@@ -148,8 +137,6 @@ export default function AuthPage() {
               className="w-full p-2 border rounded"
               required
             />
-
-        
             <div className="relative">
               <input
                 type={showLoginPassword ? "text" : "password"}
@@ -166,60 +153,6 @@ export default function AuthPage() {
                 {showLoginPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
-
-         
-            <div className="relative">
-              <input
-                type={showAppPassword ? "text" : "password"}
-                placeholder="App Password (16 lowercase letters)"
-                value={appPassword}
-                onChange={(e) => {
-                  const v = e.target.value.toLowerCase();
-                  if (/^[a-z]*$/.test(v) && v.length <= 16) {
-                    setAppPassword(v);
-                  }
-                }}
-                maxLength={16}
-                className="w-full p-2 border rounded"
-                required
-              />
-              <span
-                className="absolute right-2 top-2 cursor-pointer"
-                onClick={() => setShowAppPassword(!showAppPassword)}
-              >
-                {showAppPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
-              </span>
-            </div>
-
-       
-            <div className="text-right">
-              <a
-                href="https://myaccount.google.com/apppasswords"
-                target="_blank"
-                className="text-xs text-blue-600 underline"
-              >
-                Create App Password
-              </a>
-            </div>
-
-      
-            <div className="text-xs bg-gray-50 border rounded p-3 text-gray-700">
-              <p className="font-semibold mb-1">
-                🔐 How to create App Password
-              </p>
-              <ol className="list-decimal ml-4 space-y-1">
-                <li>Use the same Gmail entered above</li>
-                <li>Enable 2-Step Verification</li>
-                <li>Open App Passwords</li>
-                <li>Select App → Mail</li>
-                <li>Select Device → Other</li>
-                <li>Copy 16-character password</li>
-              </ol>
-            </div>
-
-            <p className="text-xs text-red-600">
-              ⚠️ Do NOT use your Gmail password.
-            </p>
 
             <button
               type="submit"
@@ -239,7 +172,6 @@ export default function AuthPage() {
               className="w-full p-2 border rounded"
               required
             />
-
             <input
               type="email"
               placeholder="Gmail Address"
@@ -248,7 +180,6 @@ export default function AuthPage() {
               className="w-full p-2 border rounded"
               required
             />
-
             <div className="relative">
               <input
                 type={showSignupPassword ? "text" : "password"}
@@ -265,7 +196,6 @@ export default function AuthPage() {
                 {showSignupPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
-
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -282,6 +212,56 @@ export default function AuthPage() {
                 {showConfirmPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
+
+          
+            <div className="relative">
+              <input
+                type={showSignupAppPassword ? "text" : "password"}
+                placeholder="App Password (16 lowercase letters)"
+                value={signupAppPassword}
+                onChange={(e) => {
+                  const v = e.target.value.toLowerCase();
+                  if (/^[a-z]*$/.test(v) && v.length <= 16) {
+                    setSignupAppPassword(v);
+                  }
+                }}
+                maxLength={16}
+                className="w-full p-2 border rounded"
+                required
+              />
+              <span
+                className="absolute right-2 top-2 cursor-pointer"
+                onClick={() => setShowSignupAppPassword(!showSignupAppPassword)}
+              >
+                {showSignupAppPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
+              </span>
+            </div>
+
+            <div className="text-right">
+              <a
+                href="https://myaccount.google.com/apppasswords"
+                target="_blank"
+                className="text-xs text-blue-600 underline"
+              >
+                Create App Password
+              </a>
+            </div>
+
+            <div className="text-xs bg-gray-50 border rounded p-3 text-gray-700">
+              <p className="font-semibold mb-1">🔐 How to create App Password</p>
+              <ol className="list-decimal ml-4 space-y-1">
+                <li>Use the same Gmail entered above</li>
+                <li>Enable 2-Step Verification</li>
+                <li>Open App Passwords</li>
+                <li>Select App → Mail</li>
+                <li>Select Device → Other</li>
+                <li>Copy 16-character password</li>
+              </ol>
+            </div>
+
+            <p className="text-xs text-red-600">
+              ⚠️ Do NOT use your Gmail password.
+            </p>
 
             <button
               type="submit"

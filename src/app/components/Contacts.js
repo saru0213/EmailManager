@@ -9,7 +9,7 @@ import {
   Upload,
   Users,
 } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 
 function Contacts({
   searchTerm,
@@ -22,6 +22,34 @@ function Contacts({
   setFilterGroup,
   USER_ID,
 }) {
+  const [importError, setImportError] = useState("");
+
+  const handleImport = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const validTypes = ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
+    if (!validTypes.includes(file.type)) {
+      setImportError("Invalid file type. Only .xlsx allowed.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setImportError("File size too large. Maximum 5MB allowed.");
+      return;
+    }
+
+    setImportError("");
+    try {
+      await importContactsFromExcel(file, USER_ID, groups, filteredContacts);
+      alert("Contacts imported successfully");
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      setImportError("Failed to import contacts. Please try again.");
+    }
+  };
+
   return (
     <>
       <div>
@@ -34,7 +62,7 @@ function Contacts({
                 type="text"
                 placeholder="Search contacts..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => setSearchTerm(e.target.value.trim())} // trim whitespace
                 className="w-full pl-10 text-black pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -61,7 +89,7 @@ function Contacts({
               {/* Export */}
               <button
                 onClick={() => exportContactsToExcel(filteredContacts, groups)}
-                title="export data"
+                title="Export data"
                 className="px-4 py-2 border rounded-lg hover:bg-gray-100 flex justify-center gap-1"
               >
                 Export
@@ -75,31 +103,20 @@ function Contacts({
                     <Upload className="w-4 h-4 mt-1" />
                     Import
                   </span>
-
                   <input
                     type="file"
                     accept=".xlsx"
                     hidden
-                    title="import data"
-                    onChange={async (e) => {
-                      const file = e.target.files[0];
-                      if (!file) return;
-
-                      await importContactsFromExcel(
-                        file,
-                        USER_ID,
-                        groups,
-                        filteredContacts
-                      );
-
-                      alert("Contacts imported successfully");
-                      window.location.reload();
-                    }}
+                    title="Import data"
+                    onChange={handleImport}
                   />
                 </label>
               )}
             </div>
           </div>
+          {importError && (
+            <p className="text-red-600 text-sm mt-1">{importError}</p>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">

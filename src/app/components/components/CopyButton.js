@@ -18,20 +18,37 @@ export default function InviteLink({ uId }) {
   };
 
   const generateInviteLink = async () => {
-    const res = await fetch("/api/invite/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: uId,
-      }),
-    });
+    try {
+      const res = await fetch("/api/invite/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: uId,
+        }),
+      });
 
-    const data = await res.json();
+      if (!res.ok) {
+        console.error("API error:", res.status);
+        alert("Failed to generate invite link");
+        return;
+      }
 
-    await navigator.clipboard.writeText(data.link);
-    alert(
-      `Invite link copied (expires in ${process.env.NEXT_PUBLIC_EXPIRE_TIME} Min)`
-    );
+      const data = await res.json();
+
+      if (!data.link) {
+        alert("Invite link not received");
+        return;
+      }
+
+      await navigator.clipboard.writeText(data.link);
+
+      alert(
+        `Invite link copied (expires in ${process.env.NEXT_PUBLIC_EXPIRE_TIME} Min)`,
+      );
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Something went wrong");
+    }
   };
 
   return (
